@@ -1,5 +1,3 @@
-import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.exclude
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -74,7 +72,7 @@ dependencies {
 
     // Dagger 3
     implementation("com.google.dagger:hilt-android:2.48")
-    implementation("com.google.dagger:hilt-android-compiler:2.48")
+    kapt("com.google.dagger:hilt-android-compiler:2.48")
 
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
