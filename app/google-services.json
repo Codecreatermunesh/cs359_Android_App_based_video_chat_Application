@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "63650861720",
+    "firebase_url": "https://assignment-project-c9b55-default-rtdb.firebaseio.com",
+    "project_id": "assignment-project-c9b55",
+    "storage_bucket": "assignment-project-c9b55.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:63650861720:android:baf46102ff470422d776ed",
+        "android_client_info": {
+          "package_name": "com.ashish.videoconferencingtool"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9lbNMawMUuhCnrgQV5QHIrGgyqWGOraw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:63650861720:android:c3e95d11f9518afcd776ed",
+        "android_client_info": {
+          "package_name": "com.codewithkael.firebasevideocall"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9lbNMawMUuhCnrgQV5QHIrGgyqWGOraw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
