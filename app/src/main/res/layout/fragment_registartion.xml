@@ -55,8 +55,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="@string/enter_your_name"
-                android:inputType="number"
-                android:maxLength="10"/>
+                android:inputType="textPersonName"/>
         </com.google.android.material.textfield.TextInputLayout>
 
 <!--        <com.google.android.material.textfield.TextInputLayout-->
@@ -79,14 +78,16 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp">
+            android:layout_marginTop="16dp"
+            app:prefixText="+91">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/mobile"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="@string/enter_mobile_number"
-                android:inputType="textPersonName"/>
+                android:inputType="number"
+                android:maxLength="10"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout

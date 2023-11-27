@@ -1,7 +1,8 @@
 package com.ashish.videoconferencingtool.di
 
 import com.ashish.videoconferencingtool.api.AuthAPI
-import com.ashish.videoconferencingtool.utils.ApiConstants.BASE_URL
+import com.ashish.videoconferencingtool.api.UserAPI
+import com.ashish.videoconferencingtool.utils.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -40,7 +41,9 @@ class NetworkModule {
         return retrofit.create(AuthAPI::class.java)
     }
 
-
-
-
+    @Singleton
+    @Provides
+    fun providesUserAPI(retrofit: Retrofit): UserAPI {
+        return retrofit.create(UserAPI::class.java)
+    }
 }

@@ -16,6 +16,7 @@ import com.ashish.videoconferencingtool.utils.Extensions.gone
 import com.ashish.videoconferencingtool.utils.Extensions.visible
 import com.ashish.videoconferencingtool.utils.LoadingDialog
 import com.ashish.videoconferencingtool.utils.NetworkResult
+import com.ashish.videoconferencingtool.utils.SharedPref
 import com.ashish.videoconferencingtool.viewmodels.AuthVewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -27,6 +28,8 @@ class RegistrationFragment : Fragment() {
     private val binding get() = _binding!!
     private val authViewModel : AuthVewModel by viewModels()
 
+    @Inject
+    lateinit var sharedPref : SharedPref
     @Inject
     lateinit var loadingDialog: LoadingDialog
 
@@ -70,11 +73,28 @@ class RegistrationFragment : Fragment() {
         val mobile = binding.mobileItl.getText("Please enter mobile Number")
         val password = binding.mobileItl.getMobile()
         return  if (name != null  && mobile != null  && password != null ){
-            UserSignUpReq(mobile = mobile, password = password, name = name)
+            UserSignUpReq(mobile = mobile.toLong(), password = password, name = name)
         }else null
 
     }
-
+//    private fun generateFcmToken():String{
+//        var fcmToken = ""
+//        if (sharedPref.getFCMToken() == null) {
+//            FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+//                if (!task.isSuccessful) {
+//                    Log.w(Constants.TAG, "Fetching FCM registration token failed", task.exception)
+//                    return@OnCompleteListener
+//                }
+//                fcmToken = task.result
+//                sharedPref.saveFCMToken(fcmToken)
+//
+//            })
+//        }else{
+//            fcmToken = sharedPref.getFCMToken()!!
+//        }
+//        toast(fcmToken)
+//        return fcmToken
+//    }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

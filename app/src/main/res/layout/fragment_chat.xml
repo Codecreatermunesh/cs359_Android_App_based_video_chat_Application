@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/chat_bg"
+    tools:context=".fragments.ChatFragment">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@color/primary_color"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_marginVertical="6dp"
+                android:gravity="center_vertical">
+                <ImageView
+                    android:id="@+id/ic_back"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:contentDescription="@string/back"
+                    android:src="@drawable/ic_back_arrow" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/profile"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:contentDescription="@null"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/profile_aavtar"
+                    android:layout_marginStart="8dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+               <LinearLayout
+                   android:layout_width="0dp"
+                   android:layout_height="wrap_content"
+                   android:layout_weight="1"
+                   android:layout_marginStart="6dp"
+                   android:layout_marginEnd="16dp"
+                   android:orientation="vertical">
+
+                   <TextView
+                       android:id="@+id/title_txt"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:fontFamily="@font/poppins_regular"
+                       android:gravity="start"
+                       android:includeFontPadding="false"
+                       android:textColor="@color/on_primary"
+                       android:textSize="20sp" />
+                   <TextView
+                       android:id="@+id/online_status_txt"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:textSize="12sp"
+                       android:gravity="start"
+                       android:includeFontPadding="false"
+                       android:fontFamily="@font/poppins_medium"
+                       android:textColor="@color/on_primary"/>
+               </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/video_iv"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:padding="5dp"
+                    android:layout_marginEnd="16dp"
+                    android:contentDescription="@string/video_call"
+                    android:src="@drawable/video_icon" />
+
+                <ImageView
+                    android:id="@+id/call_iv"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginEnd="16dp"
+                    android:padding="5dp"
+                    android:contentDescription="@string/audio_call"
+                    android:src="@drawable/call_icon" />
+
+                <ImageView
+                    android:id="@+id/menu_iv"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:padding="5dp"
+                    android:contentDescription="@string/menu"
+                    android:src="@drawable/three_dot" />
+
+            </LinearLayout>
+
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:cardCornerRadius="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/mic_iv">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="bottom"
+            android:padding="8dp">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_margin="4dp"
+                android:contentDescription="@string/attachment"
+                android:src="@drawable/attachment" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/message_itl"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                app:boxBackgroundColor="@color/white"
+                app:placeholderText="@string/message"
+                app:boxStrokeWidth="0dp"
+                android:elevation="5dp"
+                app:placeholderTextColor="#505050"
+                app:boxStrokeWidthFocused="0dp"
+                app:layout_constraintWidth_max="488dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/message"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="0dp"
+                    android:textColor="@color/black"
+                    android:maxLines="10"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_margin="4dp"
+                android:contentDescription="@string/camera"
+                android:src="@drawable/camera"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+
+
+    <ImageView
+        android:id="@+id/mic_iv"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_mic"
+        android:background="@drawable/circular_bg"
+        android:layout_margin="8dp"
+        android:padding="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <ImageView
+        android:id="@+id/send_msg_iv"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_send"
+        android:background="@drawable/circular_bg"
+        android:layout_margin="8dp"
+        android:padding="10dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

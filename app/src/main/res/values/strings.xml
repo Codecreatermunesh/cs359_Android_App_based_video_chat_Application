@@ -13,4 +13,15 @@
     <string name="enter_your_email_address">Enter your email address</string>
     <string name="sign_in">Sign In</string>
     <string name="loading">Loading…</string>
+    <string name="select_contact">Select Contact</string>
+    <string name="message">Message</string>
+    <string name="menu">menu</string>
+    <string name="back">Back</string>
+    <string name="video_call">video Call</string>
+    <string name="audio_call">Audio Call</string>
+    <string name="send_message">Send message</string>
+    <string name="attachment">Attachment</string>
+    <string name="camera">Camera</string>
+    <string name="start_chatting">Start Chatting</string>
+    <string name="message_privately_with_your_28_whatsapp_contact">Message Privately with your 28 Whatsapp Contact</string>
 </resources>

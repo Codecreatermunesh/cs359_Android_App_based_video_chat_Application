@@ -6,6 +6,7 @@ import com.ashish.videoconferencingtool.api.AuthAPI
 import com.ashish.videoconferencingtool.models.User
 import com.ashish.videoconferencingtool.models.request.UserSignInReq
 import com.ashish.videoconferencingtool.models.request.UserSignUpReq
+import com.ashish.videoconferencingtool.models.response.UserResponse
 import com.ashish.videoconferencingtool.utils.Constants.MSG
 import com.ashish.videoconferencingtool.utils.Constants.NO_INTERNET_CONNECTION
 import com.ashish.videoconferencingtool.utils.Constants.SOMETHING_WENT_WRONG
@@ -53,11 +54,12 @@ class AuthRepo @Inject constructor(
         }
     }
 
-    private fun handleResponse(response: Response<User>) {
+    private fun handleResponse(response: Response<UserResponse>) {
         if (response.isSuccessful && response.body() != null) {
             val user = response.body()!!
-            userMutableLiveData.postValue(NetworkResult.Success(response.body()!!))
-            tokenManager.saveUser(user)
+            userMutableLiveData.postValue(NetworkResult.Success(response.body()!!.user))
+            tokenManager.saveToken(user.token)
+            tokenManager.saveUserDetails(user.user)
         }else{
             val errorJson = JSONObject(response.errorBody()?.charStream()!!.readText())
             userMutableLiveData.postValue(NetworkResult.Error(errorJson.getString(MSG)))
