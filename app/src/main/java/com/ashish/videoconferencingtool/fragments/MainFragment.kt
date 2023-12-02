@@ -2,21 +2,33 @@ package com.ashish.videoconferencingtool.fragments
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ashish.videoconferencingtool.adapter.UserRvAdapter
 import com.ashish.videoconferencingtool.databinding.FragmentMainBinding
 import com.ashish.videoconferencingtool.models.User
+import com.ashish.videoconferencingtool.utils.Constants.TAG
+import com.ashish.videoconferencingtool.utils.Constants._CHAT
 import com.ashish.videoconferencingtool.utils.Extensions.gone
+import com.ashish.videoconferencingtool.utils.Extensions.toast
 import com.ashish.videoconferencingtool.utils.LoadingDialog
+import com.ashish.videoconferencingtool.utils.NetworkResult
 import com.ashish.videoconferencingtool.utils.SharedPref
+import com.ashish.videoconferencingtool.viewmodels.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import io.socket.client.Socket
+import io.socket.emitter.Emitter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.json.JSONObject
 import javax.inject.Inject
 
 
@@ -24,6 +36,9 @@ import javax.inject.Inject
 class MainFragment : Fragment() {
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
+
+    //ViewModel Instance
+    private val userViewModel: UserViewModel by viewModels()
 
     private lateinit var userRvAdapter: UserRvAdapter
 
@@ -41,7 +56,7 @@ class MainFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         userList = listOf()
-//        userViewModel.getAllUsers()
+        userViewModel.getAllUsers()
     }
 
     override fun onCreateView(
@@ -66,8 +81,8 @@ class MainFragment : Fragment() {
 //            (activity as MainActivity?)?.showNotification()
 //        }
 
-
         socket.connect()
+        socket.on(_CHAT, newChatMessage)
 
         binding.chatRv.layoutManager = LinearLayoutManager(requireContext())
         binding.chatRv.setHasFixedSize(false)
@@ -78,6 +93,38 @@ class MainFragment : Fragment() {
         }
 //        binding.newContactBtn.isExtended = false
         binding.startChattingMsgTxt.gone()
+
+
+        /** OBSERVERs */
+        userViewModel.userLiveData.observe(viewLifecycleOwner) {
+            when (it) {
+                is NetworkResult.Error -> toast(it.message!!)
+                is NetworkResult.Loading -> toast("Loading...")
+                is NetworkResult.Success -> {
+                    it.data?.let { userList ->
+                        val newList : MutableList<User> = it.data as MutableList<User>
+                        val user = userList.first { user -> user.id == sharedPref.getUserId() }
+                        newList.remove(user)
+                        userRvAdapter.submitList(newList)
+                    }
+                }
+                else -> {}
+            }
+        }
+
+
+    }
+
+    private val newChatMessage = Emitter.Listener { args ->
+        CoroutineScope(Dispatchers.Main).launch {
+            val data = args[0] as JSONObject
+            Log.d(TAG, "Message : $data")
+
+//            val msg = data.getString("message")
+//            if (isVisible){
+//                toast(msg)
+//            }
+        }
     }
 
     override fun onDestroyView() {

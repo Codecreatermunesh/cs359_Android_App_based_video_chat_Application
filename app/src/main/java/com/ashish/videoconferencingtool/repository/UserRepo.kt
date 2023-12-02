@@ -19,11 +19,11 @@ class UserRepo @Inject constructor(
     private val userListMutableLiveData = MutableLiveData<NetworkResult<List<User>>>()
     val userListLiveData : LiveData<NetworkResult<List<User>>> get() = userListMutableLiveData
 
-    suspend fun getAllUsers(contactList : List<Long>){
+    suspend fun getAllUsers(){
         userListMutableLiveData.postValue(NetworkResult.Loading())
         try {
             if (networkManager.internetConnected){
-                val response = userAPI.getAllUser(mapOf("contacts" to contactList))
+                val response = userAPI.getAllUser()
                 if (response.isSuccessful && response.body() != null){
                     userListMutableLiveData.postValue(NetworkResult.Success(response.body()!!))
                 }else{

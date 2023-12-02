@@ -12,12 +12,12 @@ class SharedPref @Inject constructor(@ApplicationContext context: Context) {
 
     private var prefs = context.getSharedPreferences(PREFS_TOKEN_FILE, Context.MODE_PRIVATE)
 
-
     fun saveToken(token: String) {
         prefs.edit().putString(TOKEN, token).apply()
     }
 
     fun getToken() = prefs.getString(TOKEN, null)
+
 
 //    fun saveFCMToken(fcmToken : String){
 //        prefs.edit().putString(FCM_TOKEN, fcmToken).apply()
@@ -29,7 +29,7 @@ class SharedPref @Inject constructor(@ApplicationContext context: Context) {
         prefs.edit().putString(ID, user.id).apply()
     }
 
-//    fun getUserId() = prefs.getString(ID, null)
+    fun getUserId() = prefs.getString(ID, null)
 //    fun deleteUserDetails() {
 //        prefs.edit().clear().apply()
 //    }

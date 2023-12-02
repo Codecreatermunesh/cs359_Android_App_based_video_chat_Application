@@ -11,13 +11,13 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class UserVewModel @Inject constructor(private val userRepo: UserRepo) : ViewModel(){
+class UserViewModel @Inject constructor(private val userRepo: UserRepo) : ViewModel(){
 
     val userLiveData : LiveData<NetworkResult<List<User>>> get() = userRepo.userListLiveData
 
-    fun getAllUsers(contactList : List<Long>){
+    fun getAllUsers(){
         viewModelScope.launch {
-            userRepo.getAllUsers(contactList)
+            userRepo.getAllUsers()
         }
     }
 }

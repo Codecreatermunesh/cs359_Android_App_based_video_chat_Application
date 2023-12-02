@@ -3,7 +3,7 @@ package com.ashish.videoconferencingtool.utils
 object Constants {
 
     // Base Url
-    const val BASE_URL = "http://192.168.97.130:3000/"
+    const val BASE_URL = "http://192.168.18.130:3000/"
 
     const val TAG = "ChatApp"
 
@@ -33,15 +33,18 @@ object Constants {
 //    const val USER_CONNECTION = "user-connection"
 
     const val USER_ONLINE_STATUS = "userOnlineStatus"
+    const val _CHAT = "chat"
+    const val CHAT_SUCCESS = "chat-success"
 
     // API Endpoints
     const val SIGN_UP = "auth/signup"
     const val SIGN_IN = "auth/signin"
     const val ALL_USER = "user/all"
+    const val CHAT = "chat/"
 
     // Constants
-    const val MINUTE = 60 * 1000
-    const val HOUR = 60 * MINUTE
+    private const val MINUTE = 60 * 1000
+    private const val HOUR = 60 * MINUTE
     const val DAY = 24 * HOUR
 
 

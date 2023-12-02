@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
+    <color name="black">#000000</color>
     <color name="white">#FFFFFFFF</color>
+    
+    <color name="chat_bg_color">#30000000</color>
 
     <color name="primary_color">#6610f2</color>
     <color name="on_primary">#ffffff</color>
     <color name="input_text_bg_color">#f5f6f8</color>
 
     <color name="input_field_hint_color">#6610f2</color>
-    <color name="request_bg_color">#EFEFEF</color>
+    <color name="bg_color">#EFEFEF</color>
     <color name="invitation_card_bg">#757575</color>
     <color name="success">#11A679</color>
+
+    <color name="file_color">#212529</color>
 
     <color name="confirmed">#238823</color>
     <color name="reject">#D2222D</color>
