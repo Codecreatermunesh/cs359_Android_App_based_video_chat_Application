@@ -5,6 +5,7 @@ import com.ashish.videoconferencingtool.api.ChatAPI
 import com.ashish.videoconferencingtool.api.UserAPI
 import com.ashish.videoconferencingtool.di.interceptor.AuthMiddleware
 import com.ashish.videoconferencingtool.utils.Constants.BASE_URL
+import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,7 +15,6 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
-import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 
@@ -26,9 +26,6 @@ class NetworkModule {
         HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
 
     private val okHttpClient = OkHttpClient.Builder()
-        .connectTimeout(60, TimeUnit.SECONDS)
-        .writeTimeout(60, TimeUnit.SECONDS)
-        .readTimeout(60, TimeUnit.SECONDS)
         .addInterceptor(interceptor).build()
 
     @Singleton
@@ -40,6 +37,11 @@ class NetworkModule {
             .baseUrl(BASE_URL)
             .client(okHttpClient)
     }
+
+
+    @Singleton
+    @Provides
+    fun providesFirebaseStorage()  =FirebaseStorage.getInstance().reference.child("files")
 
     @Singleton
     @Provides

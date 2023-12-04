@@ -2,7 +2,6 @@ package com.ashish.videoconferencingtool.fragments
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,8 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.ashish.videoconferencingtool.adapter.UserRvAdapter
 import com.ashish.videoconferencingtool.databinding.FragmentMainBinding
 import com.ashish.videoconferencingtool.models.User
-import com.ashish.videoconferencingtool.utils.Constants.TAG
-import com.ashish.videoconferencingtool.utils.Constants._CHAT
 import com.ashish.videoconferencingtool.utils.Extensions.gone
 import com.ashish.videoconferencingtool.utils.Extensions.toast
 import com.ashish.videoconferencingtool.utils.LoadingDialog
@@ -24,11 +21,6 @@ import com.ashish.videoconferencingtool.utils.SharedPref
 import com.ashish.videoconferencingtool.viewmodels.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import io.socket.client.Socket
-import io.socket.emitter.Emitter
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import org.json.JSONObject
 import javax.inject.Inject
 
 
@@ -53,8 +45,12 @@ class MainFragment : Fragment() {
     @Inject
     lateinit var socket: Socket
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (!socket.isActive){
+            socket.connect()
+        }
         userList = listOf()
         userViewModel.getAllUsers()
     }
@@ -77,12 +73,6 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        if (activity is MainActivity) {
-//            (activity as MainActivity?)?.showNotification()
-//        }
-
-        socket.connect()
-        socket.on(_CHAT, newChatMessage)
 
         binding.chatRv.layoutManager = LinearLayoutManager(requireContext())
         binding.chatRv.setHasFixedSize(false)
@@ -101,29 +91,16 @@ class MainFragment : Fragment() {
                 is NetworkResult.Error -> toast(it.message!!)
                 is NetworkResult.Loading -> toast("Loading...")
                 is NetworkResult.Success -> {
-                    it.data?.let { userList ->
+                    it.data?.let { usersList ->
                         val newList : MutableList<User> = it.data as MutableList<User>
-                        val user = userList.first { user -> user.id == sharedPref.getUserId() }
-                        newList.remove(user)
+                        val user = usersList.filter { user -> user.id == sharedPref.getUserId() }
+                        if (user.isNotEmpty()){
+                            newList.remove(user.first())
+                        }
                         userRvAdapter.submitList(newList)
                     }
                 }
-                else -> {}
             }
-        }
-
-
-    }
-
-    private val newChatMessage = Emitter.Listener { args ->
-        CoroutineScope(Dispatchers.Main).launch {
-            val data = args[0] as JSONObject
-            Log.d(TAG, "Message : $data")
-
-//            val msg = data.getString("message")
-//            if (isVisible){
-//                toast(msg)
-//            }
         }
     }
 
@@ -181,7 +158,7 @@ class MainFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (this::socket.isInitialized && socket.connected()) {
+        if (socket.isActive) {
             socket.disconnect()
         }
     }

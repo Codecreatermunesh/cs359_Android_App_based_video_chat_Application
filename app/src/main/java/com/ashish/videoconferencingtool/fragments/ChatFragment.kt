@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.ashish.videoconferencingtool.R
 import com.ashish.videoconferencingtool.adapter.MessageRvAdapter
 import com.ashish.videoconferencingtool.databinding.FragmentChatBinding
+import com.ashish.videoconferencingtool.models.MediaFile
 import com.ashish.videoconferencingtool.models.Message
 import com.ashish.videoconferencingtool.models.User
 import com.ashish.videoconferencingtool.utils.Constants.CHAT_SUCCESS
@@ -41,12 +42,7 @@ import io.socket.emitter.Emitter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
 import org.json.JSONObject
-import java.io.File
-import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -66,10 +62,10 @@ class ChatFragment : Fragment() {
     private val chatViewModel: ChatViewModel by viewModels()
     private lateinit var messageRvAdapter: MessageRvAdapter
 
-    private var selectedFile : File? = null
-
     @Inject
     lateinit var sharedPref: SharedPref
+
+    private var mediaFile: MediaFile? = null
 
     @Inject
     lateinit var socket: Socket
@@ -80,15 +76,12 @@ class ChatFragment : Fragment() {
     lateinit var user: User
     private val binding get() = _binding!!
 
-    private var file : MultipartBody.Part? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val participants: List<String> = listOf(
             sharedPref.getUserId()!!, args.user.id
         )
         chatViewModel.getChatUsers(participants)
-        messageRvAdapter = MessageRvAdapter(sharedPref.getUserId()!!)
 
     }
 
@@ -97,6 +90,7 @@ class ChatFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentChatBinding.inflate(inflater, container, false)
+        messageRvAdapter = MessageRvAdapter(sharedPref.getUserId()!!, requireContext())
         return binding.root
     }
 
@@ -126,10 +120,7 @@ class ChatFragment : Fragment() {
         binding.sendMsgIv.setOnClickListener {
             val message = binding.message.text.toString()
             if (message.isNotEmpty()) {
-                val msg = JSONObject()
-                msg.put("message", message)
-                msg.put("receiver", user.id)
-                socket.emit(_CHAT, msg)
+                message(message, null)
             }
         }
 
@@ -155,10 +146,10 @@ class ChatFragment : Fragment() {
             findNavController().navigate(R.id.action_chatFragment_to_mainFragment)
         }
         binding.playVideoIv.setOnClickListener {
-            if (binding.videoview.isPlaying){
+            if (binding.videoview.isPlaying) {
                 binding.videoview.pause()
                 binding.playVideoIv.setImageResource(R.drawable.ic_play)
-            }else{
+            } else {
                 binding.videoview.start()
                 binding.playVideoIv.setImageResource(R.drawable.baseline_pause)
             }
@@ -166,20 +157,16 @@ class ChatFragment : Fragment() {
 
         binding.cancelFileIv.setOnClickListener {
             binding.attachmentLayout.gone()
-            selectedFile?.delete()
-            file = null
-            if (binding.videoview.isPlaying){
+            if (binding.videoview.isPlaying) {
                 binding.videoview.pause()
                 binding.videoview.setVideoURI(null)
             }
         }
 
         binding.sendFileIv.setOnClickListener {
-            if (file != null){
-                toast("All is Right")
-                chatViewModel.uploadFile(file!!,user.id)
-            }else{
-                toast("Something went wrong")
+            if (mediaFile != null) {
+                if (binding.videoview.isPlaying) binding.videoview.pause()
+                chatViewModel.uploadFile(mediaFile?.url!!, mediaFile?.fileType!!)
             }
         }
 
@@ -194,6 +181,25 @@ class ChatFragment : Fragment() {
 //        }
     }
 
+    /** Emit New Message */
+    private fun message(message: String?, mediaFile: MediaFile?) {
+        val msg = JSONObject()
+        msg.put("receiver", user.id)
+        if (message != null) {
+            msg.put("message", message)
+            msg.put("file", false)
+        } else {
+            msg.put("file", true)
+            msg.put("fileType", mediaFile?.fileType)
+            msg.put("mimeType", mediaFile?.mimeType)
+            msg.put("originalName", mediaFile?.originalName)
+            msg.put("size", mediaFile?.size)
+            msg.put("url", mediaFile?.url.toString())
+
+        }
+        socket.emit(_CHAT, msg)
+    }
+
     private fun observers() {
         chatViewModel.msgSentLiveData.observe(viewLifecycleOwner) {
             if (it) {
@@ -203,7 +209,7 @@ class ChatFragment : Fragment() {
             }
         }
         chatViewModel.userChatListLiveData.observe(viewLifecycleOwner) {
-            messageRvAdapter.submitList(it.distinctBy { msg -> msg._id })
+            messageRvAdapter.submitList(it)
             binding.msgRv.scrollToPosition(it.size - 1)
         }
         chatViewModel.chatUserLiveData.observe(viewLifecycleOwner) {
@@ -220,44 +226,67 @@ class ChatFragment : Fragment() {
         chatViewModel.msgSentLiveData.observe(viewLifecycleOwner) {
             if (it) {
                 binding.message.setText("")
-            }
-        }
-
-        //Upload File Observable
-        chatViewModel.fileLiveData.observe(viewLifecycleOwner){
-            loadingDialog.dismiss()
-            when(it) {
-                is NetworkResult.Error -> {
-                    Log.e(TAG, "${it.message}")
-                }
-                is NetworkResult.Loading -> loadingDialog.startLoading()
-                is NetworkResult.Success -> {
-                    chatViewModel.setNewMessage(it.data!!)
+                if (mediaFile != null) {
+                    mediaFile = null
                     binding.attachmentLayout.gone()
-                    selectedFile?.delete()
-                    file = null
-                    if (binding.videoLayout.isVisible){
+                    if (binding.videoLayout.isVisible) {
                         binding.videoLayout.gone()
                     }
-                    if (binding.fileLayout.isVisible){
+                    if (binding.fileLayout.isVisible) {
                         binding.fileLayout.gone()
                     }
-                    if (binding.selectedImage.isVisible){
+                    if (binding.selectedImage.isVisible) {
                         binding.selectedImage.gone()
                     }
-                    if (binding.videoview.isPlaying){
+                    if (binding.videoview.isPlaying) {
                         binding.videoview.pause()
                         binding.videoview.setVideoURI(null)
                     }
                 }
             }
         }
+
+        //Upload File Observable
+        chatViewModel.uploadFileLiveData.observe(viewLifecycleOwner) {
+            loadingDialog.dismiss()
+            when (it) {
+                is NetworkResult.Error -> {
+                    Log.e(TAG, "${it.message}")
+                }
+
+                is NetworkResult.Loading -> loadingDialog.startLoading()
+                is NetworkResult.Success -> {
+                    mediaFile?.url = it.data!!.toString()
+                    message(null, mediaFile)
+//                    chatViewModel.setNewMessage(it.data!!)
+//                    binding.attachmentLayout.gone()
+//                    if (binding.videoLayout.isVisible){
+//                        binding.videoLayout.gone()
+//                    }
+//                    if (binding.fileLayout.isVisible){
+//                        binding.fileLayout.gone()
+//                    }
+//                    if (binding.selectedImage.isVisible){
+//                        binding.selectedImage.gone()
+//                    }
+//                    if (binding.videoview.isPlaying){
+//                        binding.videoview.pause()
+//                        binding.videoview.setVideoURI(null)
+//                    }
+                }
+            }
+        }
     }
 
+
+    /** Socket IO Listeners */
+
+    /** User Online Status */
     private val userOnlineStatusMessage = Emitter.Listener { args ->
         CoroutineScope(Dispatchers.Main).launch {
             val data = args[0] as JSONObject
             val isOnline = data.getBoolean(IS_ONLINE)
+            Log.d(TAG, "Online Status$data")
             if (isVisible) {
                 binding.onlineStatusTxt.text = if (isOnline) {
                     "Online"
@@ -268,30 +297,55 @@ class ChatFragment : Fragment() {
         }
     }
 
-    // Listen New Message Received
+    /** Listen New Message Received */
     private val receiveNewMsg = Emitter.Listener { args ->
         val data = args[0] as JSONObject
-        val id = data.getString("_id")
+        val id = data.getString("id")
         val senderId = data.getString("senderId")
         val timestamp = data.getLong("timestamp")
         val msg = data.getString("message")
-        chatViewModel.setNewMessage(Message(id, msg, senderId, timestamp))
+        if (msg.isEmpty()) {
+            val url = data.getString("url")
+            val size = data.getLong("size")
+            val originalName = data.getString("originalName")
+            val mimeType = data.getString("mimeType")
+            val fileType = data.getString("fileType")
+            chatViewModel.setNewMessage(
+                Message(
+                    id, msg, senderId, timestamp,
+                    MediaFile(
+                        fileType = fileType,
+                        size = size,
+                        originalName = originalName,
+                        mimeType = mimeType,
+                        url = url
+                    )
+                )
+            )
+        } else {
+            chatViewModel.setNewMessage(Message(id, msg, senderId, timestamp))
+        }
     }
 
-    // Listen Message Successfully send
+    /** Listen Message Successfully send */
     private val msgSentStatus = Emitter.Listener { args ->
         val data = args[0] as JSONObject
-        val result = data.getBoolean("result")
+//        val result = data.getBoolean("result")
         val id = data.getString("id")
         val timestamp = data.getLong("timestamp")
         val msg = data.getString("message")
-        if (result) {
-            val senderId = sharedPref.getUserId()!!
-            val message =
-                Message(_id = id, senderId = senderId, message = msg, timestamp = timestamp)
-            chatViewModel.setNewMessage(message)
-            chatViewModel.msgSentStatusLiveData(result)
-        }
+
+        val senderId = sharedPref.getUserId()!!
+        val message =
+            Message(
+                _id = id,
+                senderId = senderId,
+                message = msg,
+                timestamp = timestamp,
+                file = mediaFile
+            )
+        chatViewModel.setNewMessage(message)
+        chatViewModel.msgSentStatusLiveData(true)
     }
 
     private fun getLastSeenStatus(lastSeenTimestamp: Long): String {
@@ -336,29 +390,31 @@ class ChatFragment : Fragment() {
                 val cR = requireContext().contentResolver
                 val mime = MimeTypeMap.getSingleton()
                 val mimeType = cR.getType(uri)!!
-                Log.d(TAG, mimeType)
                 val fileName = getFileName(uri)
                 val type = mime.getExtensionFromMimeType(mimeType)!!
-                file = getFile(fileName,mimeType,uri)
-                if (mimeType.split("/").first() == "image"){
+                val size = fileName.second // Size of file
+                Log.d(TAG, "$size")
+                this.mediaFile = MediaFile(type, fileName.first, size, uri.toString(), mimeType)
+
+                if (mimeType.split("/").first() == "image") {
                     binding.selectedImage.setImageURI(uri)
                     binding.videoLayout.gone()
                     binding.fileLayout.gone()
                     binding.selectedImage.visible()
 
-                }else if (mimeType.split("/").first() == "video"){
+                } else if (mimeType.split("/").first() == "video") {
                     binding.videoLayout.visible()
                     binding.selectedImage.gone()
                     binding.fileLayout.gone()
                     binding.videoview.setVideoURI(uri)
-                }else{
+                } else {
                     binding.fileTypeTxt.text = type.uppercase()
                     binding.videoLayout.gone()
                     binding.selectedImage.gone()
                     binding.fileLayout.visible()
                 }
             }
-        }catch (e : NullPointerException){
+        } catch (e: NullPointerException) {
             toast("Retry again")
         }
     }
@@ -388,40 +444,48 @@ class ChatFragment : Fragment() {
 //        }
 //    }
 
-    private fun getFile(fileName : String,mimeType: String, uri: Uri) : MultipartBody.Part{
-        return run {
-            val fileDir = requireContext().applicationContext.filesDir
-            selectedFile = File(fileDir, fileName)
-            val inputStream = requireContext().contentResolver.openInputStream(uri)
-            val outputStream = FileOutputStream(selectedFile)
-            inputStream!!.copyTo(outputStream)
-            inputStream.close()
-            val requestBody = selectedFile!!.asRequestBody(mimeType.toMediaTypeOrNull())
+//    private fun getFile(fileName : String,mimeType: String, uri: Uri) : MultipartBody.Part{
+//        return run {
+//            val fileDir = requireContext().applicationContext.filesDir
+//            selectedFile = File(fileDir, fileName)
+//            val inputStream = requireContext().contentResolver.openInputStream(uri)
+//            val outputStream = FileOutputStream(selectedFile)
+//            inputStream!!.copyTo(outputStream)
+//            inputStream.close()
+//            val requestBody = selectedFile!!.asRequestBody(mimeType.toMediaTypeOrNull())
+//
+//            MultipartBody.Part.createFormData("file", selectedFile!!.name, requestBody)
+//        }
+//    }
 
-            MultipartBody.Part.createFormData("file", selectedFile!!.name, requestBody)
-        }
-    }
-
-    private fun getFileName(uri: Uri): String {
+    private fun getFileName(uri: Uri): Pair<String,Long> {
         var fileName: String? = null
+        var size = 0L
         val contentResolver = requireContext().contentResolver
 
         contentResolver.query(uri, null, null, null, null)?.use { cursor ->
             if (cursor.moveToFirst()) {
                 fileName =
                     cursor.getString(cursor.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME))
+                val sizeColumnIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
+                size = if (sizeColumnIndex != -1 && cursor.count > 0) {
+                    cursor.moveToFirst()
+                    cursor.getLong(sizeColumnIndex)
+                } else {
+                    0
+                }
 //                    extension =
 //                        cursor.getString(cursor.getColumnIndexOrThrow("mime_type")).split(("/"))
 //                            .last()
             }
         }
-        return fileName ?: "newFile"
+         fileName = fileName ?: "newFile"
+        return Pair(fileName!!,size)
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
-        selectedFile?.delete()
-        file = null
         _binding = null
     }
 

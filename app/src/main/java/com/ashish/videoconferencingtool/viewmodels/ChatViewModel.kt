@@ -1,6 +1,6 @@
 package com.ashish.videoconferencingtool.viewmodels
 
-import android.util.Log
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,7 +10,6 @@ import com.ashish.videoconferencingtool.repository.ChatRepo
 import com.ashish.videoconferencingtool.utils.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import okhttp3.MultipartBody
 import javax.inject.Inject
 
 @HiltViewModel
@@ -47,14 +46,23 @@ class ChatViewModel @Inject constructor(
     }
 
     // Upload File
-    val fileLiveData : LiveData<NetworkResult<Message>> get() = chatRepo.fileLiveData
+//    val fileLiveData : LiveData<NetworkResult<Message>> get() = chatRepo.fileLiveData
 
-    fun uploadFile(file : MultipartBody.Part, receiverId : String){
+//    fun uploadFile(file : MultipartBody.Part, receiverId : String){
+//        viewModelScope.launch {
+//            Log.d("ChatApp","All is Fine")
+//            chatRepo.uploadFile(file,receiverId)
+//        }
+//    }
+
+    val uploadFileLiveData : LiveData<NetworkResult<Uri>> get() = chatRepo.uploadFileLiveData
+
+    fun uploadFile(uri : String,type : String){
         viewModelScope.launch {
-            Log.d("ChatApp","All is Fine")
-            chatRepo.uploadFile(file,receiverId)
+            chatRepo.uploadFile(uri,type)
         }
     }
+
 
 
 }

@@ -3,7 +3,7 @@ package com.ashish.videoconferencingtool.utils
 object Constants {
 
     // Base Url
-    const val BASE_URL = "http://192.168.18.130:3000/"
+    const val BASE_URL = "http://192.168.37.130:3000/"
 
     const val TAG = "ChatApp"
 
