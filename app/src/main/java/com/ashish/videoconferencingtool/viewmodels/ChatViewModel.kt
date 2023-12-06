@@ -62,7 +62,4 @@ class ChatViewModel @Inject constructor(
             chatRepo.uploadFile(uri,type)
         }
     }
-
-
-
 }

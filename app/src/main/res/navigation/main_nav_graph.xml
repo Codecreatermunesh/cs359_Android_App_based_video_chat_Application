@@ -55,6 +55,12 @@
             app:destination="@id/mainFragment"
             app:popUpTo="@id/mainFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_chatFragment_to_callFragment"
+            app:destination="@id/callFragment" />
+        <action
+            android:id="@+id/action_chatFragment_to_audioCallFragment"
+            app:destination="@id/audioCallFragment" />
     </fragment>
     <fragment
         android:id="@+id/selectNewUserFragment"
@@ -66,5 +72,18 @@
             app:destination="@id/chatFragment"
             app:popUpTo="@id/mainFragment"
             app:popUpToInclusive="false" />
+    </fragment>
+    <fragment
+        android:id="@+id/callFragment"
+        android:name="com.ashish.videoconferencingtool.fragments.CallFragment"
+        android:label="fragment_call"
+        tools:layout="@layout/fragment_call" />
+    <fragment
+        android:id="@+id/audioCallFragment"
+        android:name="com.ashish.videoconferencingtool.fragments.AudioCallFragment"
+        android:label="AudioCallFragment" >
+        <argument
+            android:name="username"
+            app:argType="string" />
     </fragment>
 </navigation>

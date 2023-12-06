@@ -36,7 +36,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
-
                 <ImageView
                     android:id="@+id/receiver_sent_vv"
                     android:layout_width="260dp"
@@ -55,8 +54,6 @@
                     android:visibility="gone"
                     android:contentDescription="@null"
                     android:src="@drawable/ic_play"
-                    android:background="#000000"
-                    app:tint="@color/on_primary"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

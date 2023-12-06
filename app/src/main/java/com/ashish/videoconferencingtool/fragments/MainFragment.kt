@@ -23,28 +23,21 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.socket.client.Socket
 import javax.inject.Inject
 
-
 @AndroidEntryPoint
 class MainFragment : Fragment() {
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
-
     //ViewModel Instance
     private val userViewModel: UserViewModel by viewModels()
-
     private lateinit var userRvAdapter: UserRvAdapter
-
     private lateinit var userList: List<User>
 
     @Inject
     lateinit var loadingDialog: LoadingDialog
-
     @Inject
     lateinit var sharedPref: SharedPref
-
     @Inject
     lateinit var socket: Socket
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +45,9 @@ class MainFragment : Fragment() {
             socket.connect()
         }
         userList = listOf()
-        userViewModel.getAllUsers()
+        if (userViewModel.userLiveData.value == null) {
+            userViewModel.getAllUsers()
+        }
     }
 
     override fun onCreateView(
@@ -73,7 +68,6 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         binding.chatRv.layoutManager = LinearLayoutManager(requireContext())
         binding.chatRv.setHasFixedSize(false)
         binding.chatRv.adapter = userRvAdapter
@@ -84,12 +78,12 @@ class MainFragment : Fragment() {
 //        binding.newContactBtn.isExtended = false
         binding.startChattingMsgTxt.gone()
 
-
         /** OBSERVERs */
         userViewModel.userLiveData.observe(viewLifecycleOwner) {
+            loadingDialog.dismiss()
             when (it) {
                 is NetworkResult.Error -> toast(it.message!!)
-                is NetworkResult.Loading -> toast("Loading...")
+                is NetworkResult.Loading -> loadingDialog.startLoading()
                 is NetworkResult.Success -> {
                     it.data?.let { usersList ->
                         val newList : MutableList<User> = it.data as MutableList<User>
@@ -100,6 +94,7 @@ class MainFragment : Fragment() {
                         userRvAdapter.submitList(newList)
                     }
                 }
+                else -> {}
             }
         }
     }

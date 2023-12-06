@@ -3,7 +3,7 @@ package com.ashish.videoconferencingtool.utils
 object Constants {
 
     // Base Url
-    const val BASE_URL = "http://192.168.37.130:3000/"
+    const val BASE_URL = "https://video-conferencing-api-production.up.railway.app/"
 
     const val TAG = "ChatApp"
 
@@ -46,6 +46,5 @@ object Constants {
     private const val MINUTE = 60 * 1000
     private const val HOUR = 60 * MINUTE
     const val DAY = 24 * HOUR
-
-
+    
 }

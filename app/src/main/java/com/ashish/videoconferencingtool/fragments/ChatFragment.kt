@@ -124,6 +124,15 @@ class ChatFragment : Fragment() {
             }
         }
 
+        binding.videoCameraIv.setOnClickListener {
+
+            findNavController().navigate(R.id.action_chatFragment_to_callFragment)
+        }
+        binding.callIv.setOnClickListener {
+            val action = ChatFragmentDirections.actionChatFragmentToAudioCallFragment(args.user.name)
+            findNavController().navigate(action)
+        }
+
         // Text Change Listener
         binding.message.doOnTextChanged { text, start, before, count ->
             if (!text.isNullOrEmpty()) {
@@ -220,6 +229,8 @@ class ChatFragment : Fragment() {
                 is NetworkResult.Success -> {
                     it.data?.let { msgList -> chatViewModel.setUserChatList(msgList) }
                 }
+
+                else -> {}
             }
         }
 
@@ -274,6 +285,8 @@ class ChatFragment : Fragment() {
 //                        binding.videoview.setVideoURI(null)
 //                    }
                 }
+
+                else -> {}
             }
         }
     }
