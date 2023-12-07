@@ -1,0 +1,102 @@
+package com.munesh.videoconferencingtool.fragments
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import com.munesh.videoconferencingtool.R
+import com.munesh.videoconferencingtool.databinding.FragmentRegistartionBinding
+import com.munesh.videoconferencingtool.models.request.UserSignUpReq
+import com.munesh.videoconferencingtool.utils.Extensions.getMobile
+import com.munesh.videoconferencingtool.utils.Extensions.getText
+import com.munesh.videoconferencingtool.utils.Extensions.gone
+import com.munesh.videoconferencingtool.utils.Extensions.visible
+import com.munesh.videoconferencingtool.utils.LoadingDialog
+import com.munesh.videoconferencingtool.utils.NetworkResult
+import com.munesh.videoconferencingtool.utils.SharedPref
+import com.munesh.videoconferencingtool.viewmodels.AuthVewModel
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
+
+@AndroidEntryPoint
+class RegistrationFragment : Fragment() {
+
+    private var _binding : FragmentRegistartionBinding? = null
+    private val binding get() = _binding!!
+    private val authViewModel : AuthVewModel by viewModels()
+
+    @Inject
+    lateinit var sharedPref : SharedPref
+    @Inject
+    lateinit var loadingDialog: LoadingDialog
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View{
+        _binding = FragmentRegistartionBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.signInTxt.setOnClickListener {
+            findNavController().popBackStack()
+        }
+        binding.signUpBtn.setOnClickListener {
+            val userSignUpReq = validateInput()
+            if (userSignUpReq != null){
+                authViewModel.signUp(userSignUpReq)
+            }
+        }
+        authViewModel.userLiveData.observe(viewLifecycleOwner){
+            loadingDialog.dismiss()
+            when(it){
+                is NetworkResult.Error -> {
+                    binding.msgTxt.text = it.message
+                    binding.msgTxt.visible()
+                }
+                is NetworkResult.Loading -> loadingDialog.startLoading()
+                is NetworkResult.Success -> {
+                    findNavController().navigate(R.id.action_registrationFragment_to_mainFragment)
+                }
+            }
+        }
+    }
+
+    private fun validateInput(): UserSignUpReq?{
+        binding.msgTxt.gone()
+        val name = binding.nameItl.getText("Please enter your name")
+        val mobile = binding.mobileItl.getText("Please enter mobile Number")
+        val password = binding.mobileItl.getMobile()
+        return  if (name != null  && mobile != null  && password != null ){
+            UserSignUpReq(mobile = mobile.toLong(), password = password, name = name)
+        }else null
+
+    }
+//    private fun generateFcmToken():String{
+//        var fcmToken = ""
+//        if (sharedPref.getFCMToken() == null) {
+//            FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+//                if (!task.isSuccessful) {
+//                    Log.w(Constants.TAG, "Fetching FCM registration token failed", task.exception)
+//                    return@OnCompleteListener
+//                }
+//                fcmToken = task.result
+//                sharedPref.saveFCMToken(fcmToken)
+//
+//            })
+//        }else{
+//            fcmToken = sharedPref.getFCMToken()!!
+//        }
+//        toast(fcmToken)
+//        return fcmToken
+//    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+}

@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:63650861720:android:baf46102ff470422d776ed",
+        "mobilesdk_app_id": "1:63650861720:android:c3e95d11f9518afcd776ed",
         "android_client_info": {
-          "package_name": "com.ashish.videoconferencingtool"
+          "package_name": "com.codewithkael.firebasevideocall"
         }
       },
       "oauth_client": [],
@@ -27,9 +27,9 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:63650861720:android:c3e95d11f9518afcd776ed",
+        "mobilesdk_app_id": "1:63650861720:android:ce9a4597b090269cd776ed",
         "android_client_info": {
-          "package_name": "com.codewithkael.firebasevideocall"
+          "package_name": "com.munesh.videoconferencingtool"
         }
       },
       "oauth_client": [],

@@ -10,11 +10,11 @@ plugins {
 }
 
 android {
-    namespace = "com.ashish.videoconferencingtool"
+    namespace = "com.munesh.videoconferencingtool"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.ashish.videoconferencingtool"
+        applicationId = "com.munesh.videoconferencingtool"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

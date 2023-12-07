@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.ashish.videoconferencingtool.fragments.LoginFragment"
+        android:name="com.munesh.videoconferencingtool.fragments.LoginFragment"
         android:label="fragment_login"
         tools:layout="@layout/fragment_login" >
         <action
@@ -21,7 +21,7 @@
     </fragment>
     <fragment
         android:id="@+id/registrationFragment"
-        android:name="com.ashish.videoconferencingtool.fragments.RegistrationFragment"
+        android:name="com.munesh.videoconferencingtool.fragments.RegistrationFragment"
         android:label="fragment_registartion"
         tools:layout="@layout/fragment_registartion" >
         <action
@@ -32,7 +32,7 @@
     </fragment>
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.ashish.videoconferencingtool.fragments.MainFragment"
+        android:name="com.munesh.videoconferencingtool.fragments.MainFragment"
         android:label="fragment_main"
         tools:layout="@layout/fragment_main" >
         <action
@@ -44,12 +44,12 @@
     </fragment>
     <fragment
         android:id="@+id/chatFragment"
-        android:name="com.ashish.videoconferencingtool.fragments.ChatFragment"
+        android:name="com.munesh.videoconferencingtool.fragments.ChatFragment"
         android:label="fragment_chat"
         tools:layout="@layout/fragment_chat" >
         <argument
             android:name="user"
-            app:argType="com.ashish.videoconferencingtool.models.User" />
+            app:argType="com.munesh.videoconferencingtool.models.User" />
         <action
             android:id="@+id/action_chatFragment_to_mainFragment"
             app:destination="@id/mainFragment"
@@ -64,7 +64,7 @@
     </fragment>
     <fragment
         android:id="@+id/selectNewUserFragment"
-        android:name="com.ashish.videoconferencingtool.fragments.SelectNewUserFragment"
+        android:name="com.munesh.videoconferencingtool.fragments.SelectNewUserFragment"
         android:label="fragment_select_new_user"
         tools:layout="@layout/fragment_select_new_user" >
         <action
@@ -75,12 +75,12 @@
     </fragment>
     <fragment
         android:id="@+id/callFragment"
-        android:name="com.ashish.videoconferencingtool.fragments.CallFragment"
+        android:name="com.munesh.videoconferencingtool.fragments.CallFragment"
         android:label="fragment_call"
         tools:layout="@layout/fragment_call" />
     <fragment
         android:id="@+id/audioCallFragment"
-        android:name="com.ashish.videoconferencingtool.fragments.AudioCallFragment"
+        android:name="com.munesh.videoconferencingtool.fragments.AudioCallFragment"
         android:label="AudioCallFragment" >
         <argument
             android:name="username"
